@@ -1,6 +1,7 @@
 import datetime
 import os.path
 import re
+import json
 
 import lxml.html
 from measurement.measures import Energy, Weight, Volume
@@ -83,6 +84,14 @@ class Client(MFPBase):
             'measurements/edit'
         ) + '?page=%d&type=%d' % (page, measurement_id)
 
+    def _get_url_for_nutrition(self, days, nutrition_type):
+        return self.BASE_URL +\
+            'reports/results/nutrition/'+\
+            nutrition_type+\
+            '/'+\
+            repr(days)+\
+            '.json'
+
     def _get_content_for_url(self, url):
         return self.session.get(url).content.decode('utf8')
 
@@ -90,6 +99,10 @@ class Client(MFPBase):
         content = self._get_content_for_url(url)
 
         return lxml.html.document_fromstring(content)
+
+    def _get_json_for_url(self, url):
+        content = self._get_content_for_url(url)
+        return json.loads(content)
 
     def _get_measurement(self, name, value):
         if not self.unit_aware:
@@ -293,6 +306,29 @@ class Client(MFPBase):
                 del measurements[date]
 
         return measurements
+
+    def get_nutrition(self, daysToQuery):
+        nutrition = dict()
+        # get data for different
+        nutrition['Calories'] = self._get_json_for_url(self._get_url_for_nutrition(daysToQuery, 'Calories'))
+        nutrition['Carbs'] = self._get_json_for_url(self._get_url_for_nutrition(daysToQuery, 'Carbs'))
+        nutrition['Protein'] = self._get_json_for_url(self._get_url_for_nutrition(daysToQuery, 'Protein'))
+        nutrition['Fat'] = self._get_json_for_url(self._get_url_for_nutrition(daysToQuery, 'Fat'))
+
+        # write data in a dictionary
+        for name, document in nutrition.iteritems():
+            nutrition[name] = self._get_nutrition(document)
+        return nutrition
+
+    def _get_nutrition(self, document):
+        nutrition = ordereddict.OrderedDict()
+        for days in reversed(document['data']):
+            # convert string to datetime object - sadly there is no way to know the year
+            date = days['date'].split("/")
+            date_string = datetime.date(2015, int(date[0]), int(date[1]))
+
+            nutrition[date_string] = days['total']
+        return nutrition
 
     def _get_measurements(self, document):
 
