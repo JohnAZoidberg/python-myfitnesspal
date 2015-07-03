@@ -174,6 +174,33 @@ weight
 
 Measurements are returned as ordered dictionaries. The first argument specifies the measurement name, which can be any name listed in the MyFitnessPal [Check-In](http://www.myfitnesspal.com/measurements/check_in/) page. When specifying a date range, the order of the date arguments does not matter.
 
+Nutrition Examples
+----
+
+To access nutrition data from the past 30 days:
+
+```python
+import myfitnesspal
+client = myfitnesspal.Client('my_username', 'my_password')
+nutrition = client.get_nutrition(30)
+nutrition['Calories']
+#nutrition['Fat']
+#nutrition['Carbs']
+#nutrition['Protein']
+# >> OrderedDict([(datetime.date(2015, 7, 3), 2744.0), (datetime.date(2015, 7, 2), 3119.0), (datetime.date(2015, 7, 1), 3099.0),
+                  (datetime.date(2015, 6, 30), 3028.0), (datetime.date(2015, 6, 29), 3012.0), (datetime.date(2015, 6, 28), 3002.0),
+                  (datetime.date(2015, 6, 27), 3022.0), (datetime.date(2015, 6, 26), 3014.0), (datetime.date(2015, 6, 25), 3006.0),
+                  (datetime.date(2015, 6, 24), 3104.0), (datetime.date(2015, 6, 23), 3013.0), (datetime.date(2015, 6, 22), 3002.0),
+                  (datetime.date(2015, 6, 21), 3076.0), (datetime.date(2015, 6, 20), 3077.0), (datetime.date(2015, 6, 19), 3005.0),
+                  (datetime.date(2015, 6, 18), 3052.0), (datetime.date(2015, 6, 17), 2885.0), (datetime.date(2015, 6, 16), 3023.0),
+                  (datetime.date(2015, 6, 15), 2995.0), (datetime.date(2015, 6, 14), 3107.0), (datetime.date(2015, 6, 13), 2990.0),
+                  (datetime.date(2015, 6, 12), 3046.0), (datetime.date(2015, 6, 11), 2940.0), (datetime.date(2015, 6, 10), 3876.0),
+                  (datetime.date(2015, 6, 9), 3001.0), (datetime.date(2015, 6, 8), 3039.0), (datetime.date(2015, 6, 7), 3116.0),
+                  (datetime.date(2015, 6, 6), 2954.0), (datetime.date(2015, 6, 5), 3041.0), (datetime.date(2015, 6, 4), 3101.0)])
+
+```
+The nutritional data is returned as a dictionary with the keys Calories, Fat, Carbs, Protein which in turn holds ordered dictionaries that look just like the ordered dicts you get from get_measurements.
+
 Hints
 -----
 

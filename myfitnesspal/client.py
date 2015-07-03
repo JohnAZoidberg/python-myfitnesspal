@@ -322,6 +322,7 @@ class Client(MFPBase):
 
     def _get_nutrition(self, document):
         nutrition = ordereddict.OrderedDict()
+        # reverse because data from other methods also comes in that order
         for days in reversed(document['data']):
             # convert string to datetime object - sadly there is no way to know the year
             date = days['date'].split("/")
